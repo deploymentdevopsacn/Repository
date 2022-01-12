@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:props="antlib:org.apache.ant.props" name="Test" default="build">
+   <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+   <!-- Activate Props antlib -->
+   <propertyhelper>
+      <props:nested />
+   </propertyhelper>
+   <!-- Load properties -->
+   <property environment="env" />
+   <property file="build.properties" />
+   <!-- Build task -->
+   <target name="build">
+      <antcall target="warSetupCAS" />
+      <!--<antcall target="warSetupNOCAS" />
+      <antcall target="updateWarCAS" />
+      <antcall target="updateWarNOCAS" />
+      <antcall target="updateOOTBManagedProperties" />
+      <antcall target="buildSpinner" />
+      <antcall target="compileJPO" /> -->
+   </target>
+   <!-- Build WAR archive for CAS using staging -->
+   <target name="warSetupCAS">
+      <echo message="Phase_make_war ${line.separator}" file="${FILE_MESSAGE}" append="true" />
+      <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_CAS.bat" failonerror="true" />
+   </target>
+   
+   <!-- Build WAR archive for NOCAS using staging -->
+   <target name="warSetupNOCAS">
+      <echo message="Phase_make_war ${line.separator}" file="${FILE_MESSAGE}" append="true" />
+      <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_NoCAS.bat" failonerror="true" />
+   </target>
+   
+   <!-- Update War CAS archives with CUSTO -->
+   <target name="updateWarCAS">
+      <delete dir="${TMP}/${webapp.name}" quiet="false" failonerror="false" performGCOnFailedDelete="true" />
+      <delete dir="${TMP}/${webapp.name}.war" quiet="false" failonerror="false" performGCOnFailedDelete="true" />
+      <unzip dest="${TMP}/${webapp.name}" src="${ENOVIA}/3DSpace/distrib_CAS/${webapp.name}.war" />
+      <copydir src="${SVN_PATH}/WebApplications/internal" dest="${TMP}/${webapp.name}" excludes="**/web.xml" forceoverwrite="true" />
+      <zip destfile="${TMP}/${webapp.name}.war">
+         <zipfileset dir="${TMP}/${webapp.name}" />
+      </zip>
+      <delete dir="${service.${deploy.webapp.type}.${deploy.webapp.service}.path.webapps}/${deploy.webapp.name}" quiet="true" failonerror="false" />
+      <delete dir="${service.${deploy.webapp.type}.${deploy.webapp.service}.path.webapps}/${deploy.webapp.name}.war" quiet="true" failonerror="false" />
+      <copy file="${TMP}/${deploy.webapp.name}.war" todir="${service.${deploy.webapp.type}.${deploy.webapp.service}.path.webapps}/" />
+   </target>
+   
+   <!-- Update WAR archive when only one NOCAS server for both ADLIB and SAP/ESKO -->
+   <target name="updateWarOneNOCAS">
+      <delete dir="${TMP}/${webapp.static.name}" quiet="true" failonerror="false" />
+      <delete dir="${TMP}/${webapp.static.name}.war" quiet="true" failonerror="false" />
+      <unzip dest="${TMP}/${webapp.static.name}" src="${ENOVIA}/3DSpace/distrib_NoCAS/${webapp.static.name}.war" />
+      <copydir src="${SVN_PATH}/WebApplications/internal" dest="${TMP}/${webapp.static.name}" excludes="**/web.xml" forceoverwrite="true" />
+      <copydir src="${SVN_PATH}/WebApplications/InternalResources/JSP" dest="${TMP}/${webapp.static.name}" excludes="**/web.xml" forceoverwrite="true" />
+      <!-- Update web.xml with right fragment for both ADLIB and SAP/ESKO -->
+      <antcall target="updateNoCASWebXML">
+         <param name="fragment.name" value="webservices-ONE_SERVER-fragment.xml" />
+      </antcall>
+      <zip destfile="${TMP}/${webapp.static.name}.war">
+         <zipfileset dir="${TMP}/${webapp.static.name}" />
+      </zip>
+      <delete dir="${service.${deploy.webapp.type}.${deploy.webapp.service}.path.webapps}/${deploy.webapp.name}" quiet="true" failonerror="false" />
+      <delete dir="${service.${deploy.webapp.type}.${deploy.webapp.service}.path.webapps}/${deploy.webapp.name}.war" quiet="true" failonerror="false" />
+      <copy file="${TMP}/${deploy.webapp.name}.war" todir="${service.${deploy.webapp.type}.${deploy.webapp.service}.path.webapps}/" />
+   </target>
+   
+   <!-- Update OOTB Managed Properties -->
+   <target name="updateOOTBManagedProperties">
+      <touch>
+         <fileset dir="${SVN_PATH}/WebApplications/internal/WEB-INF/classes">
+            <patternset>
+               <include name="**/*.properties" />
+               <exclude name="**/*.xml" />
+               <exclude name="**/.lst" />
+            </patternset>
+         </fileset>
+      </touch>
+      <copy todir="${ENOVIA}/3DSpace/managed/properties" overwrite="true" force="true" failonerror="true">
+         <fileset dir="${SVN_PATH}/WebApplications/internal/WEB-INF/classes">
+            <patternset>
+               <include name="**/*.properties" />
+               <exclude name="**/*.xml" />
+               <exclude name="**/.lst" />
+            </patternset>
+         </fileset>
+      </copy>
+   </target>
+   
+   <!-- Build Spinner -->
+   <target name="buildSpinner">
+      <delete dir="${spinnerdatamodel.path}/logs" quiet="true" failonerror="false" />
+      <exec executable="${ENOVIA}/3DSpace/win_b64/code/bin/mql" dir="${beforespinnerdatamodel.path}" failonerror="true">
+         <arg line="-t -c &quot;set context user ${mql.username} password ${mql.password};run beforespinner_EXEC_SCRIPTS.tcl;quit;&quot; " />
+      </exec>
+   </target>
+   
+   <!-- Compile JPO -->
+   <target name="compileJPO">
+      <echo message="mql compil force update" level="verbose" />
+      <exec executable="${ENOVIA}/3DSpace/win_b64/code/bin/mql" failonerror="true">
+         <arg line="-t -c &quot;set context user ${mql.username} password ${mql.password};compil prog * force update;quit;&quot; " />
+      </exec>
+   </target>
+   
+   <!-- ########################################################################## -->
+</project>
