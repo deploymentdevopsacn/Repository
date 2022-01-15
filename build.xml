@@ -32,14 +32,14 @@
    </target>
     <!-- Build WAR archive for NO-CAS, Update OOTB Files -->
    <target name="updateWarCAS">
-      <unzip dest="${workspace}/${CAS_WAR_FILENAME}" src="${ENOVIA}/${CAS_DISTRIB}/${CAS_WAR_FILENAME}.war" />
-      <copydir src="${SVN_PATH}/WebApplications/internal" dest="${workspace}/${CAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
-      <zip destfile="${workspace}/${CAS_WAR_FILENAME}.war">
-         <zipfileset dir="${workspace}/${CAS_WAR_FILENAME}" />
+      <unzip dest="${env.WORKSPACE}/${CAS_WAR_FILENAME}" src="${ENOVIA}/${CAS_DISTRIB}/${CAS_WAR_FILENAME}.war" />
+      <copydir src="${env.WORKSPACE}/WebApplications/internal" dest="${env.WORKSPACE}/${CAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
+      <zip destfile="${env.WORKSPACE}/${CAS_WAR_FILENAME}.war">
+         <zipfileset dir="${env.WORKSPACE}/${CAS_WAR_FILENAME}" />
       </zip>
       <delete dir="${CAS_TOMEE}/${CAS_WAR_FILENAME}" quiet="true" failonerror="false" />
       <delete dir="${CAS_TOMEE}/${CAS_WAR_FILENAME}.war" quiet="true" failonerror="false" />
-      <copy file="${workspace}/${CAS_WAR_FILENAME}.war" todir="${CAS_TOMEE}/" />
+      <copy file="${env.WORKSPACE}/${CAS_WAR_FILENAME}.war" todir="${CAS_TOMEE}/" />
    </target>
    <!-- ########################################################################## -->
 </project>
