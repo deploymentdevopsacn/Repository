@@ -12,7 +12,7 @@
    <target name="build">
       <!-- <antcall target="warSetupCAS" /> -->
       <!-- <antcall target="updateWarNOCAS" /> -->
-      <antcall target="run" />
+      <antcall target="updateWarCAS" />
    </target>
    <target name="run">
     <echo message="Jenkins workspace: ${env.WORKSPACE}"/>
