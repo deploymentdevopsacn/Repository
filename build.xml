@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:props="antlib:org.apache.ant.props" name="Test" default="build">
+   <taskdef resource="net/sf/antcontrib/antcontrib.properties" />
+   <!-- Activate Props antlib -->
+   <propertyhelper>
+      <props:nested />
+   </propertyhelper>
+   <!-- Load properties -->
+   <property environment="env" />
+   <property file="build.properties" />
+   <!-- Build task -->
+   <target name="build">
+      <antcall target="warSetupCAS" />
+      
+   </target>
+   <!-- Build WAR archive for CAS using staging -->
+   <target name="warSetupCAS">
+      <echo message="Phase_make_war ${line.separator}" file="${FILE_MESSAGE}" append="true" />
+      <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_CAS.bat" failonerror="true" />
+   </target>
+   <!-- ########################################################################## -->
+</project>
