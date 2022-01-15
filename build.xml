@@ -92,7 +92,7 @@
    <target name="compileJPO">
       <echo message="mql compil force update" level="verbose" />
       <exec executable="${ENOVIA}/3DSpace/win_b64/code/bin/mql" failonerror="true">
-         <arg line="-t -c &quot;set context user ${mql.username} password ${mql.password};compil prog * force update;quit;&quot; " />
+         <arg line="-t -c &quot;set context user ${mql.username};compil prog * force update;quit;&quot; " />
       </exec>
    </target>
    <!-- ########################################################################## -->
