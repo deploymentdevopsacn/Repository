@@ -48,7 +48,7 @@
    <target name="updateWarNOCAS">
       <unzip dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" src="${ENOVIA}/3DSpace/distrib_NoCAS/${NOCAS_WAR_FILENAME}.war" />
       <copydir src="${env.WORKSPACE}/WebApplications/internal" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
-      <copydir src="${env.WORKSPACE}/WebApplications/InternalResources/JSP" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
+      <copydir src="${env.WORKSPACE}/WebApplications/InternalResources/" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
       <zip destfile="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}.war">
          <zipfileset dir="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" />
       </zip>
