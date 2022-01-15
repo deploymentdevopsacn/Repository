@@ -10,10 +10,10 @@
    <property file="build.properties" />
    <!-- Build task -->
    <target name="build">
-      <!-- <antcall target="warSetupCAS" /> -->
-      <!-- <antcall target="warSetupNOCAS" /> -->
-      <!--  <antcall target="updateWarCAS" /> -->
-      <!--     <antcall target="updateWarNOCAS" /> -->
+      <antcall target="warSetupCAS" />
+      <antcall target="warSetupNOCAS" />
+      <antcall target="updateWarCAS" />
+      <antcall target="updateWarNOCAS" />
       <antcall target="updateOOTBManagedProperties" />
       <antcall target="buildSpinner" />
       <antcall target="compileJPO" />
