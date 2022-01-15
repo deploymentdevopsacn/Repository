@@ -12,8 +12,9 @@
    <target name="build">
       <!-- <antcall target="warSetupCAS" /> -->
       <!-- <antcall target="warSetupNOCAS" /> -->
-      <antcall target="updateWarCAS" />
-      <antcall target="updateWarNOCAS" />
+     <!--  <antcall target="updateWarCAS" /> -->
+  <!--     <antcall target="updateWarNOCAS" /> -->
+
 	  <antcall target="updateOOTBManagedProperties" />
       <antcall target="buildSpinner" />
       <antcall target="compileJPO" />
@@ -83,7 +84,7 @@
       <exec executable="${ENOVIA}/3DSpace/win_b64/code/bin/mql" dir="${env.WORKSPACE}/DataModelAndJPO" failonerror="true">
 			<!-- In case of Spinner uncomment below Line  -->
 			<!-- <arg line='-t -c "set context user ${mql.username} password ${mql.password};exec prog emxSpinnerAgent.tcl;quit;" ' /> -->
-			<arg line='-t -c "set context user ${mql.username} ;insert prog ${env.WORKSPACE}/DataModelAndJPO/DataModelAndJPO/Business/SourceFiles/emxCommonFile_mxJPO.java;insert prog ${env.WORKSPACE}/DataModelAndJPO/DataModelAndJPO/Business/SourceFiles/emxCommonFileUI_mxJPO.java;quit;" ' />
+			<arg line='-t -c "set context user ${mql.username} ;insert prog ${env.WORKSPACE}/DataModelAndJPO/Business/SourceFiles/emxCommonFile_mxJPO.java;insert prog ${env.WORKSPACE}/DataModelAndJPO/DataModelAndJPO/Business/SourceFiles/emxCommonFileUI_mxJPO.java;quit;" ' />
 		</exec>
    </target>
    
