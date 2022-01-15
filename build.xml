@@ -8,29 +8,34 @@
    <!-- Load properties -->
    <property environment="env" />
    <property file="build.properties" />
+   
    <!-- Build task -->
    <target name="build">
-      <!-- <antcall target="warSetupCAS" /> -->
-      <!-- <antcall target="updateWarNOCAS" /> -->
-      <antcall target="updateWarCAS" />
+      <antcall target="warSetupCAS" />
+	  <antcall target="warSetupNOCAS" />
+	  <antcall target="updateWarCAS" />
+	  <antcall target="updateWarNOCAS" />
    </target>
+   
    <target name="run">
-    <echo message="Jenkins workspace: ${env.WORKSPACE}"/>
-    <echo message="Job directory: ${env.WORKSPACE}/../../${env.JOB_NAME}"/>
-    <echo message="Build data: ${env.WORKSPACE}/../../${env.JOB_NAME}/builds/${env.BUILD_ID}"/>
-</target>
+      <echo message="Jenkins workspace: ${env.WORKSPACE}" />
+      <echo message="Job directory: ${env.WORKSPACE}/../../${env.JOB_NAME}" />
+      <echo message="Build data: ${env.WORKSPACE}/../../${env.JOB_NAME}/builds/${env.BUILD_ID}" />
+   </target>
+   
    <!-- Build WAR archive for CAS -->
    <target name="warSetupCAS">
-      <echo message="Phase_make_war ${line.separator}" file="${FILE_MESSAGE}" append="true" />
+      <echo message="Phase_make_war ${line.separator}" />
       <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_CAS.bat" failonerror="true" />
    </target>
    
    <!-- Build WAR archive for NO-CAS -->
    <target name="warSetupNOCAS">
-      <echo message="Phase_make_war ${line.separator}" file="${FILE_MESSAGE}" append="true" />
+      <echo message="Phase_make_war ${line.separator}" />
       <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_NoCAS.bat" failonerror="true" />
    </target>
-    <!-- Build WAR archive for NO-CAS, Update OOTB Files -->
+   
+   <!-- Build WAR archive for NO-CAS, Update OOTB Files -->
    <target name="updateWarCAS">
       <unzip dest="${env.WORKSPACE}/${CAS_WAR_FILENAME}" src="${ENOVIA}/${CAS_DISTRIB}/${CAS_WAR_FILENAME}.war" />
       <copydir src="${env.WORKSPACE}/WebApplications/internal" dest="${env.WORKSPACE}/${CAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
@@ -40,6 +45,19 @@
       <delete dir="${CAS_TOMEE}/${CAS_WAR_FILENAME}" quiet="true" failonerror="false" />
       <delete dir="${CAS_TOMEE}/${CAS_WAR_FILENAME}.war" quiet="true" failonerror="false" />
       <copy file="${env.WORKSPACE}/${CAS_WAR_FILENAME}.war" todir="${CAS_TOMEE}/" />
+   </target>
+   
+   <target name="updateWarNOCAS">
+      <unzip dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" src="${ENOVIA}/3DSpace/distrib_NoCAS/${NOCAS_WAR_FILENAME}.war" />
+      <copydir src="${env.WORKSPACE}/WebApplications/internal" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
+      <copydir src="${env.WORKSPACE}/WebApplications/InternalResources/JSP" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
+      
+      <zip destfile="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}.war">
+         <zipfileset dir="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" />
+      </zip>
+      <delete dir="${NO_CAS_TOMEE}/${NOCAS_WAR_FILENAME}" quiet="true" failonerror="false" />
+      <delete dir="${NO_CAS_TOMEE}/${NOCAS_WAR_FILENAME}.war" quiet="true" failonerror="false" />
+      <copy file="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}.war" todir="${NO_CAS_TOMEE}/" />
    </target>
    <!-- ########################################################################## -->
 </project>
