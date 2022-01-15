@@ -8,33 +8,31 @@
    <!-- Load properties -->
    <property environment="env" />
    <property file="build.properties" />
-   
    <!-- Build task -->
    <target name="build">
-    <!--  <antcall target="warSetupCAS" />
-	  <antcall target="warSetupNOCAS" /> -->
-	  <antcall target="updateWarCAS" />
-	  <antcall target="updateWarNOCAS" />
+      <!-- <antcall target="warSetupCAS" /> -->
+      <!-- <antcall target="warSetupNOCAS" /> -->
+      <antcall target="updateWarCAS" />
+      <antcall target="updateWarNOCAS" />
+	  <antcall target="updateOOTBManagedProperties" />
+      <antcall target="buildSpinner" />
+      <antcall target="compileJPO" />
    </target>
-   
    <target name="run">
       <echo message="Jenkins workspace: ${env.WORKSPACE}" />
       <echo message="Job directory: ${env.WORKSPACE}/../../${env.JOB_NAME}" />
       <echo message="Build data: ${env.WORKSPACE}/../../${env.JOB_NAME}/builds/${env.BUILD_ID}" />
    </target>
-   
    <!-- Build WAR archive for CAS -->
    <target name="warSetupCAS">
       <echo message="Phase_make_war ${line.separator}" />
       <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_CAS.bat" failonerror="true" />
    </target>
-   
    <!-- Build WAR archive for NO-CAS -->
    <target name="warSetupNOCAS">
       <echo message="Phase_make_war ${line.separator}" />
       <exec executable="${ENOVIA_DEPLOY3DS}/BuildDeploy3DSpace_NoCAS.bat" failonerror="true" />
    </target>
-   
    <!-- Build WAR archive for NO-CAS, Update OOTB Files -->
    <target name="updateWarCAS">
       <unzip dest="${env.WORKSPACE}/${CAS_WAR_FILENAME}" src="${ENOVIA}/${CAS_DISTRIB}/${CAS_WAR_FILENAME}.war" />
@@ -46,18 +44,55 @@
       <delete dir="${CAS_TOMEE}/${CAS_WAR_FILENAME}.war" quiet="true" failonerror="false" />
       <copy file="${env.WORKSPACE}/${CAS_WAR_FILENAME}.war" todir="${CAS_TOMEE}/" />
    </target>
-   
+   <!-- updateWarNOCAS -->
    <target name="updateWarNOCAS">
       <unzip dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" src="${ENOVIA}/3DSpace/distrib_NoCAS/${NOCAS_WAR_FILENAME}.war" />
       <copydir src="${env.WORKSPACE}/WebApplications/internal" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
-      <copydir src="${env.WORKSPACE}/WebApplications/InternalResources/" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
-      
+      <copydir src="${env.WORKSPACE}/WebApplications/InternalResources/JSP" dest="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" excludes="**/web.xml" forceoverwrite="true" />
       <zip destfile="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}.war">
          <zipfileset dir="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}" />
       </zip>
       <delete dir="${NO_CAS_TOMEE}/${NOCAS_WAR_FILENAME}" quiet="true" failonerror="false" />
       <delete dir="${NO_CAS_TOMEE}/${NOCAS_WAR_FILENAME}.war" quiet="true" failonerror="false" />
       <copy file="${env.WORKSPACE}/${NOCAS_WAR_FILENAME}.war" todir="${NO_CAS_TOMEE}/" />
+   </target>
+	 <!-- updateOOTBManagedProperties -->
+     <target name="updateOOTBManagedProperties">
+      <touch>
+         <fileset dir="${env.WORKSPACE}/WebApplications/internal/WEB-INF/classes">
+            <patternset>
+               <include name="**/*.properties" />
+               <exclude name="**/*.xml" />
+               <exclude name="**/.lst" />
+            </patternset>
+         </fileset>
+      </touch>
+      <copy todir="${ENOVIA}/3DSpace/managed/properties" overwrite="true" force="true" failonerror="true">
+         <fileset dir="${env.WORKSPACE}/WebApplications/internal/WEB-INF/classes">
+            <patternset>
+               <include name="**/*.properties" />
+               <exclude name="**/*.xml" />
+               <exclude name="**/.lst" />
+            </patternset>
+         </fileset>
+      </copy>
+   </target>
+   
+   <!-- Build Spinner -->
+   <target name="buildSpinner">
+      <exec executable="${ENOVIA}/3DSpace/win_b64/code/bin/mql" dir="${env.WORKSPACE}/DataModelAndJPO" failonerror="true">
+			<!-- In case of Spinner uncomment below Line  -->
+			<!-- <arg line='-t -c "set context user ${mql.username} password ${mql.password};exec prog emxSpinnerAgent.tcl;quit;" ' /> -->
+			<arg line='-t -c "set context user ${mql.username} password ${mql.password};insert prog ${env.WORKSPACE}/DataModelAndJPO/DataModelAndJPO/Business/SourceFiles/emxCommonFile_mxJPO.java;insert prog ${env.WORKSPACE}/DataModelAndJPO/DataModelAndJPO/Business/SourceFiles/emxCommonFileUI_mxJPO.java;quit;" ' />
+		</exec>
+   </target>
+   
+   <!-- Compile JPO -->
+   <target name="compileJPO">
+      <echo message="mql compil force update" level="verbose" />
+      <exec executable="${ENOVIA}/3DSpace/win_b64/code/bin/mql" failonerror="true">
+         <arg line="-t -c &quot;set context user ${mql.username} password ${mql.password};compil prog * force update;quit;&quot; " />
+      </exec>
    </target>
    <!-- ########################################################################## -->
 </project>
