@@ -12,8 +12,13 @@
    <target name="build">
       <!-- <antcall target="warSetupCAS" /> -->
       <!-- <antcall target="updateWarNOCAS" /> -->
-      <antcall target="updateWarCAS" />
+      <antcall target="run" />
    </target>
+   <target name="run">
+    <echo message="Jenkins workspace: ${env.WORKSPACE}"/>
+    <echo message="Job directory: ${env.WORKSPACE}/../../${env.JOB_NAME}"/>
+    <echo message="Build data: ${env.WORKSPACE}/../../${env.JOB_NAME}/builds/${env.BUILD_ID}"/>
+</target>
    <!-- Build WAR archive for CAS -->
    <target name="warSetupCAS">
       <echo message="Phase_make_war ${line.separator}" file="${FILE_MESSAGE}" append="true" />
